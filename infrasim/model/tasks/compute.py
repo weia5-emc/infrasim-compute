@@ -35,6 +35,7 @@ from infrasim.model.elements.dma_engine import CDMAEngine
 from infrasim.model.elements.pci_pcu import CPCIPCU
 from infrasim.model.elements.pci_imc import CPCIIMC
 from infrasim.model.elements.cpu_binding import CCPUBinding
+from infrasim.model.elements.pci_tree import CPCITree
 
 
 class CCompute(Task, CElement):
@@ -249,6 +250,16 @@ class CCompute(Task, CElement):
                 fw_cfg_obj.logger = self.logger
                 fw_cfg_obj.set_workspace(self.get_workspace())
                 pcie_topology_obj.set_fw_cfg_obj(fw_cfg_obj)
+                self.__element_list.append(fw_cfg_obj)
+        # new pci tree structure
+        if 'pci_topology' in self.__compute:
+            pci_tree_obj = CPCITree(self.__compute['pci_topology'])
+            self.__element_list.append(pci_tree_obj)
+            if 'sec_bus' in str(self.__compute.get('pci_topology')):
+                fw_cfg_obj = CPCIEFwcfg()
+                fw_cfg_obj.logger = self.logger
+                fw_cfg_obj.set_workspace(self.get_workspace())
+                pci_tree_obj.set_fw_cfg_obj(fw_cfg_obj)
                 self.__element_list.append(fw_cfg_obj)
 
         backend_network_obj = CBackendNetwork(self.__compute['networks'])
